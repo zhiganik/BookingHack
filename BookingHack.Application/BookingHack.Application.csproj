@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\BookingHack.Domain\BookingHack.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.7" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="bin\Debug\net10.0\BookingHack.Application.deps.json" />
+    <Content Include="bin\Debug\net10.0\BookingHack.Application.dll" />
+    <Content Include="bin\Debug\net10.0\BookingHack.Application.pdb" />
+    <Content Include="bin\Debug\net10.0\BookingHack.Domain.dll" />
+    <Content Include="bin\Debug\net10.0\BookingHack.Domain.pdb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\Responses\" />
+    <Folder Include="Services\Abstractions\" />
+    <Folder Include="Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="bin\**" />
+  </ItemGroup>
+
+</Project>
