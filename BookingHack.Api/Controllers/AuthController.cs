@@ -56,8 +56,12 @@ public class AuthController : ControllerBase
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
         if (!result.Succeeded)
             return Unauthorized(new { message = "Invalid credentials" });
+        
+        await _refreshTokenService.RevokeAllForUserAsync(user.Id);
+        var newToken = await _refreshTokenService.CreateAsync(user.Id);
+        var authResponse = await BuildAuthResponseAsync(user, newToken);
 
-        return Ok(await BuildAuthResponseAsync(user));
+        return Ok(authResponse);
     }
 
     [HttpPost("register")]
@@ -90,8 +94,10 @@ public class AuthController : ControllerBase
             _ => Roles.Customer
         };
         await _userManager.AddToRoleAsync(newUser, roleName);
+        var token = await _refreshTokenService.CreateAsync(newUser.Id);
+        var authResponse = await BuildAuthResponseAsync(newUser, token);
 
-        return Ok(await BuildAuthResponseAsync(newUser));
+        return Ok(authResponse);
     }
 
     [HttpPost("refresh")]
@@ -110,11 +116,8 @@ public class AuthController : ControllerBase
         if (user is null)
             return Unauthorized(new { message = "User not found" });
 
-        var roles = await _userManager.GetRolesAsync(user);
-        var userClaims = await _userManager.GetClaimsAsync(user);
-        var accessToken = _jwtService.GenerateToken(user, roles, userClaims);
-
-        return Ok(new AuthResponse(accessToken, _jwtService.GetExpiry(), rotated.Value.newRawToken));
+        var response = await BuildAuthResponseAsync(user, rotated.Value.newRawToken);
+        return Ok(response);
     }
 
     [HttpPost("logout")]
@@ -125,12 +128,11 @@ public class AuthController : ControllerBase
         return NoContent();
     }
 
-    private async Task<AuthResponse> BuildAuthResponseAsync(ApplicationUser user)
+    private async Task<AuthResponse> BuildAuthResponseAsync(ApplicationUser user, string refreshToken)
     {
         var roles = await _userManager.GetRolesAsync(user);
         var userClaims = await _userManager.GetClaimsAsync(user);
         var accessToken = _jwtService.GenerateToken(user, roles, userClaims);
-        var refreshToken = await _refreshTokenService.CreateAsync(user.Id);
         return new AuthResponse(accessToken, _jwtService.GetExpiry(), refreshToken);
     }
 }

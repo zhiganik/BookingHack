@@ -31,7 +31,10 @@ public class RefreshTokenService
         var newRawToken = await CreateAsync(userId);
         return (userId, newRawToken);
     }
-
+    
     public async Task RevokeAsync(string rawToken) =>
         await _repository.DeleteAsync(RefreshToken.Hash(rawToken));
+    
+    public async Task RevokeAllForUserAsync(string userId) => 
+        await _repository.RevokeAllForUserAsync(userId);
 }
