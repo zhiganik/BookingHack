@@ -2,6 +2,9 @@
 using BookingHack.Application;
 using BookingHack.Application.Services;
 using BookingHack.Application.Services.Abstractions;
+using BookingHack.Core.Swagger;
+using BookingHack.Domain.Constants;
+using BookingHack.Domain.Enums;
 using BookingHack.Domain.Models;
 using BookingHack.Infrastructure.PostgreSql;
 using BookingHack.Infrastructure.PostgreSql.DbContext;
@@ -9,7 +12,6 @@ using BookingHack.Infrastructure.Redis;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
@@ -35,10 +37,9 @@ public static class DependencyConfig
 
     private static IServiceCollection AddOpenApiSpec(this IServiceCollection services)
     {
-        services.AddOpenApi();
         services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo()
+            options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Title = "BookingHack API",
                 Version = "v1",
@@ -47,10 +48,29 @@ public static class DependencyConfig
                 {
                     Name = "Mykyta",
                     Email = "example@gmail.com",
-                },
+                }
             });
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token.",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer",
+                }
+            );
+            
+            options.AddSecurityRequirement(document => new()
+            {
+                [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+            });
+
+            options.OperationFilter<AllowAnonymousOperationFilter>();
+            options.OperationFilter<AuthorizationDescriptionOperationFilter>();
         });
-        
+
         return services;
     }
     
@@ -71,6 +91,7 @@ public static class DependencyConfig
     {
         services.AddValidatorsFromAssemblyContaining<IApplicationMarker>();
         services.AddScoped<ICompanyService, CompanyService>();
+        services.AddScoped<ICompanyMemberService, CompanyMemberService>();
         services.AddScoped<RefreshTokenService>();
 
         return services;
@@ -111,8 +132,10 @@ public static class DependencyConfig
                     Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured")))
             };
         });
-        
-        services.AddAuthorizationBuilder();
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy(Policies.CompanyManager, policy => policy.RequireClaim(Claims.CompanyRole, Enum.GetNames(typeof(CompanyRole))))
+            .AddPolicy(Policies.CompanyOwner, policy => policy.RequireClaim(Claims.CompanyRole, nameof(CompanyRole.Owner)));
         
         return services;
     }

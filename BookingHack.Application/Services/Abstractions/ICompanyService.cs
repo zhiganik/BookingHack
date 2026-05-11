@@ -7,7 +7,8 @@ public interface ICompanyService
 {
     Task<IEnumerable<CompanyResponse>> GetAllAsync();
     Task<CompanyResponse?> GetByIdAsync(Guid id);
-    Task<CompanyResponse> CreateAsync(CreateCompanyRequest request);
+    Task<CompanyResponse> CreateAsync(CreateCompanyRequest request, string userId);
+    Task<IEnumerable<CompanyResponse>> GetOwnedByUserAsync(string userId); 
     Task<CompanyResponse?> UpdateAsync(Guid id, UpdateCompanyRequest request);
     Task<bool> DeleteAsync(Guid id);
 }

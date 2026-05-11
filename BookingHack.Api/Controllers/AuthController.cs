@@ -42,6 +42,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequest model)
     {
         var validation = await _loginValidator.ValidateAsync(model);
@@ -60,6 +61,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterRequest model)
     {
         var validation = await _registerValidator.ValidateAsync(model);
@@ -93,6 +95,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh")]
+    [AllowAnonymous]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest model)
     {
         var validation = await _refreshValidator.ValidateAsync(model);
@@ -108,7 +111,8 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "User not found" });
 
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _jwtService.GenerateToken(user, roles);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var accessToken = _jwtService.GenerateToken(user, roles, userClaims);
 
         return Ok(new AuthResponse(accessToken, _jwtService.GetExpiry(), rotated.Value.newRawToken));
     }
@@ -124,7 +128,8 @@ public class AuthController : ControllerBase
     private async Task<AuthResponse> BuildAuthResponseAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
-        var accessToken = _jwtService.GenerateToken(user, roles);
+        var userClaims = await _userManager.GetClaimsAsync(user);
+        var accessToken = _jwtService.GenerateToken(user, roles, userClaims);
         var refreshToken = await _refreshTokenService.CreateAsync(user.Id);
         return new AuthResponse(accessToken, _jwtService.GetExpiry(), refreshToken);
     }

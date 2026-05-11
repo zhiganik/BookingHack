@@ -9,6 +9,7 @@ public class BookingHackDbContext : IdentityDbContext<ApplicationUser>
     public BookingHackDbContext(DbContextOptions<BookingHackDbContext> options) : base(options) { }
 
     public DbSet<Company> Companies => Set<Company>();
+    public DbSet<CompanyMember> CompanyMembers => Set<CompanyMember>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

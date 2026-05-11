@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BookingHack.Application.Contracts.Requests;
 using BookingHack.Application.Services.Abstractions;
 using BookingHack.Domain.Constants;
@@ -33,6 +34,17 @@ public class CompaniesController : ControllerBase
         return Ok(companies);
     }
 
+    [HttpGet("my")]
+    [Authorize(Roles = Roles.Company)]
+    public async Task<IActionResult> GetMy()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var companies = await _service.GetOwnedByUserAsync(userId);
+        return Ok(companies);
+    }
+
     [HttpGet("{id:guid}")]
     [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> GetById(Guid id)
@@ -49,7 +61,12 @@ public class CompaniesController : ControllerBase
         if (!validation.IsValid)
             return ValidationProblem(new ValidationProblemDetails(validation.ToDictionary()));
 
-        var response = await _service.CreateAsync(request);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (userId is null)
+            return Unauthorized();
+        
+        var response = await _service.CreateAsync(request, userId);
         return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
     }
 

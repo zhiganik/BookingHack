@@ -9,4 +9,6 @@ public interface ICompanyRepository
     Task<Company> AddAsync(Company company);
     Task UpdateAsync(Company company);
     Task<bool> DeleteAsync(Guid id);
+    Task<Company?> GetByIdWithMembersAsync(Guid id);
+    Task<IEnumerable<Company>> GetOwnedByUserAsync(string userId);
 }

@@ -27,7 +27,6 @@ public class RefreshTokenService
         if (userId is null)
             return null;
 
-        // Atomic rotate: delete old, issue new
         await _repository.DeleteAsync(hash);
         var newRawToken = await CreateAsync(userId);
         return (userId, newRawToken);

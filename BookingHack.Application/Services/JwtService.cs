@@ -36,7 +36,7 @@ public class JwtService
 
     public DateTime GetExpiry() => DateTime.UtcNow.AddMinutes(_expiryMinutes);
 
-    public string GenerateToken(ApplicationUser user, IList<string> roles)
+    public string GenerateToken(ApplicationUser user, IList<string> roles, IEnumerable<Claim>? extraClaims = null)
     {
         ArgumentNullException.ThrowIfNull(user);
 
@@ -53,6 +53,9 @@ public class JwtService
 
         foreach (var role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role));
+
+        if (extraClaims is not null)
+            claims.AddRange(extraClaims);
 
         var token = new JwtSecurityToken(
             issuer: _issuer,

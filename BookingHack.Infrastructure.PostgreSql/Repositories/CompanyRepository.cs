@@ -1,4 +1,5 @@
 using BookingHack.Application.Repositories;
+using BookingHack.Domain.Enums;
 using BookingHack.Domain.Models;
 using BookingHack.Infrastructure.PostgreSql.DbContext;
 using Microsoft.EntityFrameworkCore;
@@ -42,4 +43,15 @@ public class CompanyRepository : ICompanyRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<Company?> GetByIdWithMembersAsync(Guid id) =>
+        await _context.Companies
+            .Include(c => c.Members)
+            .ThenInclude(m => m.User)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+    public async Task<IEnumerable<Company>> GetOwnedByUserAsync(string userId) =>
+        await _context.Companies
+            .Where(c => c.Members.Any(m => m.UserId == userId && m.Role == CompanyRole.Owner))
+            .ToListAsync();
 }
