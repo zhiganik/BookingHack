@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingHack.Application", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingHack.Tests", "BookingHack.Tests\BookingHack.Tests.csproj", "{FBE8CA4F-F3C5-406C-B6DB-2E3D7AF5802F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingHack.Infrastructure.Redis", "BookingHack.Infrastructure.Redis\BookingHack.Infrastructure.Redis.csproj", "{AC341A39-CB07-457F-8EF2-4C001B714339}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,18 @@ Global
 		{FBE8CA4F-F3C5-406C-B6DB-2E3D7AF5802F}.Release|x64.Build.0 = Release|Any CPU
 		{FBE8CA4F-F3C5-406C-B6DB-2E3D7AF5802F}.Release|x86.ActiveCfg = Release|Any CPU
 		{FBE8CA4F-F3C5-406C-B6DB-2E3D7AF5802F}.Release|x86.Build.0 = Release|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Debug|x64.Build.0 = Debug|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Release|x64.ActiveCfg = Release|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Release|x64.Build.0 = Release|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC341A39-CB07-457F-8EF2-4C001B714339}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

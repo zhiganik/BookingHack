@@ -5,6 +5,7 @@ using BookingHack.Application.Services.Abstractions;
 using BookingHack.Domain.Models;
 using BookingHack.Infrastructure.PostgreSql;
 using BookingHack.Infrastructure.PostgreSql.DbContext;
+using BookingHack.Infrastructure.Redis;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,7 @@ public static class DependencyConfig
             .AddAuthentication(configuration)
             .AddApplication()
             .AddInfrastructure(configuration)
+            .AddRedisInfrastructure(configuration)
             .AddOpenApiSpec();
     }
 

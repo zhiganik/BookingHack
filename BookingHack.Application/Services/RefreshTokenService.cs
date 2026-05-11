@@ -5,49 +5,34 @@ namespace BookingHack.Application.Services;
 
 public class RefreshTokenService
 {
+    private static readonly TimeSpan TokenExpiry = TimeSpan.FromDays(7);
+
     private readonly IRefreshTokenRepository _repository;
 
     public RefreshTokenService(IRefreshTokenRepository repository)
-    {
-        _repository = repository;
-    }
+        => _repository = repository;
 
     public async Task<string> CreateAsync(string userId)
     {
-        var (entity, rawToken) = RefreshToken.Create(userId);
-        await _repository.AddAsync(entity);
+        var rawToken = RefreshToken.GenerateRaw();
+        await _repository.StoreAsync(RefreshToken.Hash(rawToken), userId, TokenExpiry);
         return rawToken;
     }
 
     public async Task<(string userId, string newRawToken)?> ValidateAndRotateAsync(string rawToken)
     {
-        var stored = await _repository.GetByHashAsync(RefreshToken.Hash(rawToken));
+        var hash = RefreshToken.Hash(rawToken);
+        var userId = await _repository.GetUserIdAsync(hash);
 
-        if (stored is null)
+        if (userId is null)
             return null;
 
-        if (stored.IsRevoked)
-        {
-            await _repository.RevokeAllForUserAsync(stored.UserId);
-            return null;
-        }
-
-        if (!stored.IsActive)
-            return null;
-
-        stored.Revoke();
-        await _repository.UpdateAsync(stored);
-
-        var newRawToken = await CreateAsync(stored.UserId);
-        return (stored.UserId, newRawToken);
+        // Atomic rotate: delete old, issue new
+        await _repository.DeleteAsync(hash);
+        var newRawToken = await CreateAsync(userId);
+        return (userId, newRawToken);
     }
 
-    public async Task RevokeAsync(string rawToken)
-    {
-        var stored = await _repository.GetByHashAsync(RefreshToken.Hash(rawToken));
-        if (stored is null || stored.IsRevoked) return;
-
-        stored.Revoke();
-        await _repository.UpdateAsync(stored);
-    }
+    public async Task RevokeAsync(string rawToken) =>
+        await _repository.DeleteAsync(RefreshToken.Hash(rawToken));
 }

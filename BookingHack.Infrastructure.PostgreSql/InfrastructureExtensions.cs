@@ -15,7 +15,6 @@ public static class InfrastructureExtensions
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<ICompanyRepository, CompanyRepository>();
-        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         return services;
     }

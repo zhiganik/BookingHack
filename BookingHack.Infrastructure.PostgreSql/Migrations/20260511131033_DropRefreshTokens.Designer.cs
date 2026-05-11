@@ -3,6 +3,7 @@ using System;
 using BookingHack.Infrastructure.PostgreSql.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookingHack.Infrastructure.PostgreSql.Migrations
 {
     [DbContext(typeof(BookingHackDbContext))]
-    partial class BookingHackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260511131033_DropRefreshTokens")]
+    partial class DropRefreshTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,11 +1,9 @@
-using BookingHack.Domain.Models;
-
 namespace BookingHack.Application.Repositories;
 
 public interface IRefreshTokenRepository
 {
-    Task<RefreshToken?> GetByHashAsync(string tokenHash);
-    Task AddAsync(RefreshToken token);
-    Task UpdateAsync(RefreshToken token);
+    Task<string?> GetUserIdAsync(string tokenHash);
+    Task StoreAsync(string tokenHash, string userId, TimeSpan expiry);
+    Task DeleteAsync(string tokenHash);
     Task RevokeAllForUserAsync(string userId);
 }
